@@ -1,6 +1,6 @@
 "use client";
 
-export class game{
+export class Game{
    
     direction;
     context;
@@ -11,8 +11,10 @@ export class game{
     trail;
     grid;
     color;
+    cursorX;
+    cursorY;
 
-    game(context,canvasHeight,canvasWidth,color)
+    Game(context,canvasHeight,canvasWidth,color)
     {
        this.color=color;
        this.context=context;
@@ -30,6 +32,11 @@ export class game{
       this.gameOver = false;
       this.initColourinGrid();
       this.fillGrid();
+       document.addEventListener("mousemove", (event) => {
+        this.cursorX = event.clientX;
+        this.cursorY = event.clientY;
+        this.direction = this.getDirectionFromCursor(this.cursorX, this.cursorY);
+    });
     }
 
     getDirectionFromCursor(cursorX, cursorY) {
