@@ -1,28 +1,29 @@
 "use client";
-
+import { Player } from "./Player";
 export class Game{
    
     direction;
     context;
-    head;
+    headX;
+    headY;
     gameOver;
     canvasWidth;
     canvasHeight;
-    trail;
     grid;
-    color;
     cursorX;
     cursorY;
+    Player;
 
-    Game(context,canvasHeight,canvasWidth,color)
+    constructor(context,canvasHeight,canvasWidth,color)
     {
-       this.color=color;
+       this.Player=new Player(context,color);
        this.context=context;
        this.canvasWidth=canvasWidth;
        this.canvasHeight=canvasHeight;
-       this.head = { x: this.canvasWidth / 2, y: this.canvasHeight / 2 }; 
-       this.direction = this.getDirectionFromCursor(this.head.x, this.head.y);
-       this.trail = [];
+       this.headX = this.canvasWidth / 2
+       this.headY = this.canvasHeight / 2;
+       this.direction = this.getDirectionFromCursor(this.headX, this.headY);
+       this.grid = [];
        for (let x = 0; x < this.canvasWidth; x++) {
         this.grid[x] = [];
         for (let y = 0; y < this.canvasHeight; y++) {
@@ -33,15 +34,16 @@ export class Game{
       this.initColourinGrid();
       this.fillGrid();
        document.addEventListener("mousemove", (event) => {
-        this.cursorX = event.clientX;
-        this.cursorY = event.clientY;
-        this.direction = this.getDirectionFromCursor(this.cursorX, this.cursorY);
+        this.Player.setCursor(event.clientX,event.clientY);
+        this.direction = this.getDirectionFromCursor(this.Player.cursorX, this.Player.cursorY);
+        // console.log(this.direction);
     });
+  
     }
 
     getDirectionFromCursor(cursorX, cursorY) {
-        const deltaX = cursorX - this.head.x;
-        const deltaY = cursorY - this.head.y;
+        const deltaX = cursorX - this.headX;
+        const deltaY = cursorY - this.headY;
         const angleRadians = Math.atan2(deltaY, deltaX);
         return {
           x: Math.cos(angleRadians),
@@ -65,8 +67,8 @@ export class Game{
     }
 
     draw() {
-        this.context.fillStyle = this.color; 
-        this.context.fillRect(this.head.x, this.head.y, 1, 1); 
+        this.context.fillStyle = this.Player.color; 
+        this.context.fillRect(this.headX, this.headY, 1, 1); 
       }
 
     fillGrid(){
@@ -81,21 +83,26 @@ export class Game{
     }
       
     update(){
-        if (this.gameOver) {
-          return;
-        }
         
-        this.head.x += this.direction.x;
-        this.head.y += this.direction.y;
+         if(!this.headX) this.headX= this.canvasWidth / 2;
+         if(!this.headY) this.headY= this.canvasHeight / 2;
+        
+        this.headX += this.direction.x;
+        this.headY += this.direction.y;
+        console.log(this.headX,this.headY);
         
         
-        if (this.grid[this.head.x] && this.grid[this.head.x][this.head.y] === 1) {
+        if (this.headX && this.headY && this.grid[this.headX] && this.grid[this.headX][this.headY] === 1) {
           this.gameOver = true;
           return;
         }
-        
-        this.trail.push({ x: this.head.x, y: this.head.y });
-        this.grid[this.head.x][this.head.y] = 1; 
+        if(this.Player){
+        this.Player.pushInTrail(this.headX,this.headY);
+        }
+
+        if(this.headX && this.headY && this.grid[this.headX]){
+        this.grid[this.headX][this.headY] = 1; 
+        }
         
 
     }
@@ -104,11 +111,10 @@ export class Game{
     {
       this.update();
       this.draw();
+    
+    
+      requestAnimationFrame(this.updateGame.bind(this));
       
-      if(!this.gameOver)
-      {
-        requestAnimationFrame(this.updateGame);
-      }
     }
 
     startGame()

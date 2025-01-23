@@ -10,8 +10,13 @@ export default function Home() {
     const canvasWidth=gameref.current.width;
     const canvasHeight=gameref.current.height;
     const color="black";
+    if(context && gameref){
+      // console.log("game started",context,canvasWidth,canvasHeight,color);
     const game=new Game(context,canvasHeight,canvasWidth,color);
+    console.log(game);
+    game.startGame();
     setGame(game);
+    }
   }
  
   return (
