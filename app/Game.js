@@ -68,7 +68,7 @@ export class Game{
 
     draw() {
         this.context.fillStyle = this.Player.color; 
-        this.context.fillRect(this.headX, this.headY, 1, 1); 
+        this.context.fillRect(this.headX, this.headY, 2, 2); 
       }
 
     fillGrid(){
@@ -89,13 +89,13 @@ export class Game{
         
         this.headX += this.direction.x;
         this.headY += this.direction.y;
-        console.log(this.headX,this.headY);
+        // console.log(this.headX,this.headY);
         
         
-        if (this.headX && this.headY && this.grid[this.headX] && this.grid[this.headX][this.headY] === 1) {
-          this.gameOver = true;
-          return;
-        }
+        // if (this.headX && this.headY && this.grid[this.headX] && this.grid[this.headX][this.headY] === 1) {
+        //   this.gameOver = true;
+        //   return;
+        // }
         if(this.Player){
         this.Player.pushInTrail(this.headX,this.headY);
         }
